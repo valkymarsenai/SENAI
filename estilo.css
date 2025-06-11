@@ -1,0 +1,196 @@
+:root {
+            --senai-red: #d32f2f;
+            --senai-dark-red: #b71c1c;
+            --senai-blue: #004D99; /* Novo azul SENAI */
+            --light-bg: #f9f9f9; /* Mantido para uso interno em cards */
+            --card-bg: #fff;
+            --text-color: #333;
+            --secondary-text: #6c757d;
+            --border-color: #e0e0e0;
+            --shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            background-color: var(--senai-blue); /* Fundo azul SENAI aplicado aqui */
+            color: var(--text-color);
+            padding-top: 1rem;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--card-bg); /* Fundo branco para o header */
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            max-width: 1200px;
+            margin: 2rem auto;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+
+        header img {
+            height: 120px;
+            width: auto;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+
+        h1 {
+            color: var(--senai-red);
+            font-weight: bold;
+            margin-bottom: 0.2rem;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto 3rem;
+            padding: 0 1rem;
+        }
+
+        main > section {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: none; /* Removido o box-shadow para tirar a "borda horizontal" */
+            /* Se quiser uma borda sutil para os cards brancos contra o fundo azul, pode usar: */
+            /* border: 1px solid var(--border-color); */
+        }
+
+        #data-atual {
+            position: fixed;
+            top: 1rem;
+            right: 2rem;
+            font-weight: 600;
+            color: var(--senai-red);
+            background: var(--card-bg);
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            user-select: none;
+            z-index: 1000;
+        }
+
+        table {
+            width: 100%;
+            font-size: 0.9rem;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            vertical-align: middle !important;
+            text-align: center;
+            padding: 0.75rem;
+        }
+
+        thead th {
+            background-color: var(--senai-red);
+            color: white;
+            border-color: var(--senai-dark-red);
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        tbody tr:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .btn-info-whats {
+            font-size: 0.85rem;
+            padding: 0.35rem 0.75rem;
+            background-color: #25d366;
+            border-color: #25d366;
+            color: white;
+        }
+        .btn-info-whats:hover {
+            background-color: #1da851;
+            border-color: #1da851;
+        }
+        
+        #cursoButtons .btn-outline-secondary {
+            border-color: var(--senai-red);
+            color: var(--senai-red);
+            transition: all 0.2s ease-in-out;
+        }
+        #cursoButtons .btn-outline-secondary:hover {
+            background-color: var(--senai-red);
+            color: white;
+        }
+
+        .curso-nome-clicavel {
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--senai-red);
+            text-decoration: underline;
+        }
+        .curso-nome-clicavel:hover {
+            color: var(--senai-dark-red);
+        }
+
+        footer {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-top: none; /* Removida a borda superior do footer */
+            margin-top: 3rem;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); /* Mantido o shadow para o footer para separação visual */
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 8px;
+        }
+
+        footer .bi {
+            color: var(--senai-red);
+            transition: color 0.2s;
+        }
+        footer .bi:hover {
+            color: var(--senai-dark-red);
+        }
+
+        .loading-text {
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        /* Estilo para o botão de download PDF */
+        .btn-download-pdf {
+            background-color: #007bff; /* Azul Bootstrap padrão */
+            color: white;
+            border-radius: 5px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .btn-download-pdf:hover {
+            background-color: #0056b3;
+        }
+.imagem2{
+    height: 200px;
+}
+ .container {
+        text-align: center;
+    }
+.senaipi {
+        text-align: center;
+        color: #fff;
+    }
+h1{
+    color: #1a89ff;
+}

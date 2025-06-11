@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cursos SENAI - Atualizado</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="icon" href="logo.png" type="image/png"> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+    <div id="data-atual"></div>
+
+    <header id="header-row">
+        <img src="logo.png" alt="Logo SENAI" />
+        <img src="senai.jpg" alt="senai">
+        <div>
+            <h1>Cursos Disponíveis</h1>
+            <h5 class="mb-1 text-secondary fw-bold">Senai Parnaíba</h5>
+            <p class="mb-1 fst-italic text-muted">“Pelo Futuro do Trabalho”</p>
+            <p class="mb-0 text-muted">C.F.P. - José de Moraes Correia • Parnaíba - PI</p>
+        </div>
+    </header>
+
+    <div class="text-center mb-4">
+        <button class="btn btn-download-pdf" onclick="baixarPDF()">
+            <i class="bi bi-file-earmark-arrow-down-fill"></i> Baixar Tabela de Cursos (PDF)
+        </button>
+    </div>
+    <div class="senaipi">
+    <h1> Senai Parnaiba</h1>
+    <p>O SENAI (Serviço Nacional de Aprendizagem Industrial) é uma entidade privada, 
+    sem fins lucrativos,que se dedica à formação profissional e ao desenvolvimento tecnológico da indústria no Brasil. 
+    É mantido por contribuições compulsórias de empresas e agroindústrias.O SENAI oferece uma vasta gama de cursos e programas, 
+    desde educação profissional até pós-graduação, em diversas áreas da indústria. </p>
+    </div>
+
+    <main>
+        <section id="pagos-section">
+            <h2>Cursos Pagos <span id="loading-pagos" class="loading-text">carregando...</span></h2>
+            <div class="table-responsive">
+                <table id="pagos" class="table table-striped table-bordered align-middle">
+                    <thead></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="container">
+            <img class="imagem1" src="formasdepagamentocompix.webp" alt="pagamento">
+            </div>
+        </section>
+
+        <section id="gratuitos-section">
+            <h2>Cursos Gratuitos <span id="loading-gratuitos" class="loading-text">carregando...</span></h2>
+            <div class="table-responsive">
+                <table id="gratuitos" class="table table-striped table-bordered align-middle">
+                    <thead></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+
+        </main>
+
+    <footer id="footer" class="text-center mt-5">
+        <p>© 2025 SENAI - Todos os direitos reservados.</p>
+        <div class="d-flex justify-content-center gap-4 mt-2">
+
+            <a href="https://www.instagram.com/senaiparnaiba/" target="_blank" title="Instagram" class="text-decoration-none fs-4">
+                <i class="bi bi-instagram"></i>
+            </a>
+            <a href="https://wa.me/558695004221" target="_blank" title="WhatsApp" class="text-decoration-none fs-4">
+                <i class="bi bi-whatsapp"></i>
+            </a>
+            <a href="https://g.co/kgs/QuvafVJ" target="_blank" title="Google Maps" class="text-decoration-none fs-4">
+                <i class="bi bi-geo-alt-fill"></i>
+            </a>
+        </div>
+        <img class="imagem2" src="senai1.png" alt="senai">
+        </footer>
+
+
+    <script>
+        const WHATSAPP_PHONE = "558695004221"; 
+
+        const URL_BASE = 'https://docs.google.com/spreadsheets/d/18Vy8ND6vvvXQKsR-zO22T06T0Emfb39O/gviz/tq?tqx=out:json';
+
+        // Mapa para armazenar cursos únicos e suas descrições
+        const todosCursosUnicos = new Map(); 
+        // Arrays para armazenar os dados brutos das tabelas para PDF
+        let dadosCursosPagos = [];
+        let dadosCursosGratuitos = [];
+
+        // Sua string Base64 da logo
+        // Substitua esta string pela Base64 completa da sua imagem 'logo.png'.
+        // Exemplo: const LOGO_BASE64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
+        const LOGO_BASE64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="; // Placeholder: pequena imagem PNG transparente
+
+        function atualizarDataAtual() {
+            const dataElem = document.getElementById('data-atual');
+            const opcoes = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const agora = new Date();
+            dataElem.textContent = agora.toLocaleDateString('pt-BR', opcoes);
+        }
+        atualizarDataAtual();
+        setInterval(atualizarDataAtual, 60 * 1000);
+
+        async function carregarTabela(sheetName, tabelaId, loadingId) {
+            const url = `${URL_BASE}&sheet=${sheetName}&_=${new Date().getTime()}`;
+            const loadingElem = document.getElementById(loadingId);
+            loadingElem.textContent = 'carregando...';
+
+            try {
+                const res = await fetch(url, { cache: 'no-store' });
+                const texto = await res.text();
+
+                // Extrair JSON da resposta
+                const jsonStr = texto.substring(texto.indexOf('{'), texto.lastIndexOf('}') + 1);
+                const json = JSON.parse(jsonStr);
+
+                const thead = document.querySelector(`#${tabelaId} thead`);
+                const tbody = document.querySelector(`#${tabelaId} tbody`);
+
+                thead.innerHTML = `
+                    <tr>
+                        <th>ID</th>
+                        <th>Cursos</th>
+                        <th>Valor</th>
+                        <th>Horário</th>
+                        <th>Turno</th>
+                        <th>Matrícula</th>
+                        <th>Início</th>
+                        <th>Status</th>
+                        <th>Informações</th>
+                    </tr>`;
+
+                if (json.table && json.table.rows && json.table.rows.length > 0) {
+                    // Limpa os dados anteriores antes de preencher
+                    if (sheetName === 'Pagos') {
+                        dadosCursosPagos = [];
+                    } else if (sheetName === 'Gratuitos') {
+                        dadosCursosGratuitos = [];
+                    }
+
+                    tbody.innerHTML = json.table.rows.map(row => {
+                        const c = row.c;
+                        const id = c[0]?.v || '';
+                        const curso = c[1]?.v || '';
+                        const valor = c[2]?.v || '';
+                        const horario = c[3]?.v || '';
+                        const turno = c[4]?.v || '';
+                        const matricula = c[5]?.v || '';
+                        const inicio = c[6]?.v || '';
+                        const status = c[7]?.v || '';
+                        const informacoes = c[8]?.v || ''; // Informações (índice 8)
+                        const descricao = c[9]?.v || 'Descrição não disponível.'; // Captura a descrição (índice 9)
+
+                        const textoMsg = `Gostaria de mais informações sobre o curso ${curso} no turno ${turno}`;
+                        const linkWhats = `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE}&text=${encodeURIComponent(textoMsg)}`;
+
+                        // Armazena o curso e sua descrição no mapa global
+                        todosCursosUnicos.set(curso, descricao);
+
+                        // Armazena os dados para o PDF (sem a coluna de descrição)
+                        const rowData = [
+                            id,
+                            curso,
+                            valor,
+                            horario,
+                            turno,
+                            matricula,
+                            inicio,
+                            status,
+                            informacoes
+                            // Descrição não incluída aqui para o PDF, conforme solicitado
+                        ];
+                        if (sheetName === 'Pagos') {
+                            dadosCursosPagos.push(rowData);
+                        } else if (sheetName === 'Gratuitos') {
+                            dadosCursosGratuitos.push(rowData);
+                        }
+
+                        return `<tr>
+                            <td>${id}</td>
+                            <td class="curso-nome-clicavel" onclick="mostrarDescricao('${curso.replace(/'/g, "\\'")}', '${descricao.replace(/'/g, "\\'")}')">${curso}</td>
+                            <td>${valor}</td>
+                            <td>${horario}</td>
+                            <td>${turno}</td>
+                            <td>${matricula}</td>
+                            <td>${inicio}</td>
+                            <td>${status}</td>
+                            <td><a href="${linkWhats}" target="_blank" class="btn btn-sm btn-primary btn-info-whats">Mais informações</a></td>
+                        </tr>`;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="9">Nenhum curso disponível no momento.</td></tr>`;
+                    console.warn(`A planilha '${sheetName}' está vazia ou não contém dados.`);
+                }
+
+                loadingElem.textContent = '';
+
+            } catch (error) {
+                console.error('Erro ao carregar os dados da planilha:', error);
+                loadingElem.textContent = 'Erro ao carregar os dados.';
+                tbody.innerHTML = `<tr><td colspan="9">Erro ao carregar os cursos. Tente novamente mais tarde.</td></tr>`;
+            }
+        }
+
+        // Nova função para exibir a descrição do curso em um alerta
+        function mostrarDescricao(cursoNome, descricao) {
+            alert(`Detalhes do Curso: ${cursoNome}\n\n${descricao}`);
+        }
+
+        // Função para gerar e baixar o PDF
+          function baixarPDF() {
+              // Cria um novo documento jsPDF
+              const { jsPDF } = window.jspdf;
+              const doc = new jsPDF('p', 'pt', 'a4'); // 'p' para retrato, 'pt' para pontos, 'a4' para tamanho da página
+
+              // Função para adicionar cabeçalho (logo e data) em cada página
+              const addHeader = (doc) => {
+                  const now = new Date();
+                  const formattedDate = now.toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+                  // Adiciona a logo (se a string Base64 estiver definida)
+                  if (LOGO_BASE64) {
+                      // Ajuste as coordenadas (x, y) e o tamanho (width, height) da logo conforme necessário
+                    
+                  }
+
+                  // Adiciona o título do documento
+                  doc.setFontSize(18);
+                  doc.text("Tabela de Cursos SENAI - Parnaíba", 100, 40); // Ajuste a posição para não sobrepor a logo
+
+                  // Adiciona a data de geração
+                  doc.setFontSize(8);
+                  doc.text(`Gerado em: ${formattedDate}`, doc.internal.pageSize.width - 40, 30, { align: 'right' });
+              };
+
+              // Cabeçalhos da tabela para o PDF (sem a coluna 'Descrição')
+              const headers = [
+                  ['ID', 'Cursos', 'Valor', 'Horário', 'Turno', 'Matrícula', 'Início', 'Status', 'Informações']
+              ];
+
+              // Opções comuns para autoTable
+              const autoTableOptions = {
+                  theme: 'striped',
+                  styles: { fontSize: 8, cellPadding: 5 },
+                  headStyles: { fillColor: [0, 92, 169], textColor: [255, 255, 255] }, // Cor SENAI Red
+                  margin: { top: 70, right: 40, bottom: 40, left: 40 }, // Margem maior no topo para o cabeçalho
+                  didDrawPage: function (data) {
+                      addHeader(doc); // Adiciona o cabeçalho em cada página
+                      // Footer (número da página)
+                      let str = "Página " + doc.internal.getNumberOfPages();
+                      doc.setFontSize(8);
+                      doc.text(str, data.settings.margin.left, doc.internal.pageSize.height - 10);
+                  }
+              };
+
+              // Adiciona a tabela de Cursos Pagos
+              if (dadosCursosPagos.length > 0) {
+                  doc.setFontSize(14);
+                  doc.text("Cursos Pagos", 40, autoTableOptions.margin.top - 20); // Título da seção
+                  doc.autoTable({
+                      ...autoTableOptions,
+                      head: headers, // Define o cabeçalho para esta tabela
+                      body: dadosCursosPagos, // Define os dados para esta tabela
+                      startY: autoTableOptions.margin.top // Inicia a tabela após o cabeçalho
+                  });
+              } else {
+                  doc.setFontSize(10);
+                  doc.text("Nenhum curso pago disponível.", 40, doc.autoTable.previous.finalY + 20 || autoTableOptions.margin.top);
+              }
+
+              // Adiciona a tabela de Cursos Gratuitos
+              if (dadosCursosGratuitos.length > 0) {
+                  const startYGratuitos = doc.autoTable.previous.finalY + 30; // Posição após a tabela anterior
+                  doc.setFontSize(14);
+                  doc.text("Cursos Gratuitos", 40, startYGratuitos); // Título da seção
+                  doc.autoTable({
+                      ...autoTableOptions,
+                      head: headers, // Define o cabeçalho para esta tabela
+                      body: dadosCursosGratuitos, // Define os dados para esta tabela
+                      startY: startYGratuitos + 10 // Inicia a tabela após o título da seção
+                  });
+              } else {
+                  doc.setFontSize(10);
+                  doc.text("Nenhum curso gratuito disponível.", 40, doc.autoTable.previous.finalY + 20 || autoTableOptions.margin.top);
+              }
+
+              // Salva o documento PDF
+              doc.save('Cursos_SENAI_Parnaiba.pdf');
+          }
+
+        // Carregar as duas tabelas
+        (async () => {
+            await carregarTabela('Pagos', 'pagos', 'loading-pagos');
+            await carregarTabela('Gratuitos', 'gratuitos', 'loading-gratuitos');
+        })();
+    </script>
+
+</body>
+</html>
